@@ -97,12 +97,25 @@ public class HousePriceServiceImpl implements HousePriceService {
     }
 
     /**
+     * 获取所有区县下一级房价信息
+     * @param cityId
+     * @throws Exception
+     */
+    @Override
+    public void getAllStreetPrice(String cityId) throws Exception {
+        List<String> countyList = City.countyList;
+        for(String countyId : countyList){
+            getStreetPriceList(cityId, countyId);
+        }
+    }
+
+    /**
      * 获取小区房价信息
      * 比如滟紫台
      * @throws Exception
      */
     @Override
-    public void getCommunityPriceList(String cityId, String streetId) throws Exception {
+    public void getCommunityPriceList(String cityId, String streetId, String communityId) throws Exception {
         String url = URLAddress.URL;
         url += "?cityId={cityId}";
         url += "&dataSource={dataSource}";
@@ -128,5 +141,21 @@ public class HousePriceServiceImpl implements HousePriceService {
         }
 
         System.out.println(priceResponse);
+    }
+
+    /**
+     * 获取某个街道所有小区房价信息
+     * @param cityId
+     * @param countyId
+     * @throws Exception
+     */
+    @Override
+    public void getAllCommunityPrice(String cityId, String countyId) throws Exception {
+//        List<String> countyList = City.countyList;
+//        for(String countyId : countyList){
+//            getStreetPriceList(cityId, countyId);
+//        }
+        String communityId = "";
+        getCommunityPriceList(cityId, countyId, communityId);
     }
 }

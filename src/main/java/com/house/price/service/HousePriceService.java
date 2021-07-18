@@ -21,9 +21,24 @@ public interface HousePriceService {
     void getStreetPriceList(String cityId, String countyId) throws Exception;
 
     /**
+     * 获取所有区县下一级房价信息
+     * @param cityId
+     * @throws Exception
+     */
+    void getAllStreetPrice(String cityId) throws Exception;
+
+
+    /**
      * 获取小区房价信息
      * 比如滟紫台
      * @throws Exception
      */
-    void getCommunityPriceList(String cityId, String streetId) throws Exception;
+    void getCommunityPriceList(String cityId, String streetId, String communityId) throws Exception;
+
+    /**
+     * 获取某个街道所有小区房价信息
+     */
+    void getAllCommunityPrice(String cityId, String countyId) throws Exception;
+
+
 }

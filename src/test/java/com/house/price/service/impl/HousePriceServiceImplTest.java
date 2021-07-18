@@ -42,7 +42,7 @@ public class HousePriceServiceImplTest {
     @Test
     void testGetCommunityPriceList() throws Exception {
         String cityId = CityEnum.NanJing.getCityId();
-        housePriceService.getCommunityPriceList(cityId, "");
+//        housePriceService.getCommunityPriceList(cityId, "", "");
     }
 
 }

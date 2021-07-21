@@ -21,8 +21,8 @@ public class HousePriceServiceImplTest {
      */
     @Test
     void testGetCountyPriceList() throws Exception {
-        String cityId = CityEnum.NanJing.getCityId();
-        housePriceService.getCountyPriceList(cityId);
+//        String cityId = CityEnum.NanJing.getCityId();
+//        housePriceService.getCountyPriceList(cityId);
     }
 
     /**
@@ -32,7 +32,7 @@ public class HousePriceServiceImplTest {
     @Test
     void testGetStreetPriceList() throws Exception {
         String cityId = CityEnum.NanJing.getCityId();
-        housePriceService.getStreetPriceList(cityId, "");
+//        housePriceService.getStreetPriceList(cityId, "");
     }
 
     /**

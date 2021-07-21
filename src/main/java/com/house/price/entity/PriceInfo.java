@@ -2,6 +2,8 @@ package com.house.price.entity;
 
 public class PriceInfo {
 
+    private String type;  // 类型：地市、区县、街道、小区
+
     private String border;  // 边界
     private String bubbleDesc;
     private String count;   //数量 : 10115
@@ -174,10 +176,20 @@ public class PriceInfo {
         this.selected = selected;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+
     @Override
     public String toString() {
         return "PriceInfo{" +
-                "border='" + border + '\'' +
+                "type='" + type + '\'' +
+//                ", border='" + border + '\'' +
                 ", bubbleDesc='" + bubbleDesc + '\'' +
                 ", count='" + count + '\'' +
                 ", countStr='" + countStr + '\'' +

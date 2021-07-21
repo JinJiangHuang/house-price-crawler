@@ -1,21 +1,19 @@
 package com.house.price.service.impl;
 
-import com.house.price.common.City;
+import com.house.price.common.RegionData;
 import com.house.price.common.StaticValue;
 import com.house.price.common.URLAddress;
-import com.house.price.entity.Data;
-import com.house.price.entity.PriceInfo;
-import com.house.price.entity.PriceResponse;
+import com.house.price.dao.PriceInfoDao;
+import com.house.price.entity.*;
 import com.house.price.service.HousePriceService;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 城市房价-二手房
@@ -23,20 +21,28 @@ import java.util.Map;
 @Service
 public class HousePriceServiceImpl implements HousePriceService {
 
+    private static final Log LOG = LogFactory.getLog(HousePriceServiceImpl.class);
+
     @Autowired
     RestTemplate restTemplate;
 
     @Autowired
     RedisTemplate redisTemplate;
 
+    @Autowired
+    PriceInfoDao priceInfoDao;
+
 
     /**
      * 获取区县房价信息
+     *
      * @throws Exception
      */
     @Override
-    public void getCountyPriceList(String cityId) throws Exception {
-        String url = URLAddress.URL;
+    public List<PriceInfo> getCountyPriceList(CityEntity cityEntity) throws Exception {
+        List<PriceInfo> priceInfoList = new ArrayList<>();
+
+        String url = URLAddress.PRICE_URL;
         url += "?cityId={cityId}";
         url += "&dataSource={dataSource}";
         url += "&groupType={groupType}";
@@ -46,30 +52,39 @@ public class HousePriceServiceImpl implements HousePriceService {
         url += "&minLongitude={minLongitude}";
 
         Map<String, Object> param = new HashMap<>();
-        param.put("cityId", cityId);
+        param.put("cityId", cityEntity.getId());
         param.put("dataSource", "ESF");
         param.put("groupType", StaticValue.groupType_district);
-        param.put("maxLatitude", "32.306399256054924");
-        param.put("minLatitude", "31.937478334965306");
-        param.put("maxLongitude", "119.16571969714943");
-        param.put("minLongitude", "118.44017630285043");
+
+        Matrix matrix = RegionData.cityMappingList.get(cityEntity.getId());
+        if (matrix == null) {
+            return priceInfoList;
+        }
+        param.put("maxLatitude", matrix.getMaxLatitude());
+        param.put("minLatitude", matrix.getMinLatitude());
+        param.put("maxLongitude", matrix.getMaxLongitude());
+        param.put("minLongitude", matrix.getMinLongitude());
+
         PriceResponse priceResponse = restTemplate.getForObject(url, PriceResponse.class, param);
-        if(priceResponse != null && priceResponse.getErrno() == 0){
+        if (priceResponse != null && priceResponse.getErrno() == 0) {
             Data data = priceResponse.getData();
-            List<PriceInfo> priceInfoList = data.getBubbleList();
+            priceInfoList = data.getBubbleList();
         }
 
-        System.out.println(priceResponse);
+        return priceInfoList;
     }
 
     /**
      * 获取区县下一级房价信息
      * 比如将军大道
+     *
      * @throws Exception
      */
     @Override
-    public void getStreetPriceList(String cityId, String countyId) throws Exception {
-        String url = URLAddress.URL;
+    public List<PriceInfo> getStreetPriceList(String cityId, String countyId, Matrix matrix) throws Exception {
+        List<PriceInfo> priceInfoList = new ArrayList<>();
+
+        String url = URLAddress.PRICE_URL;
         url += "?cityId={cityId}";
         url += "&dataSource={dataSource}";
         url += "&groupType={groupType}";
@@ -79,44 +94,40 @@ public class HousePriceServiceImpl implements HousePriceService {
         url += "&minLongitude={minLongitude}";
 
         Map<String, String> param = new HashMap<>();
-        param.put("cityId", "320100");
+        param.put("cityId", cityId);
         param.put("dataSource", "ESF");
         param.put("groupType", StaticValue.groupType_bizcircle);
-        param.put("maxLatitude", "31.997618837494954");
-        param.put("minLatitude", "31.90521473322665");
-        param.put("maxLongitude", "118.97391639753731");
-        param.put("minLongitude", "118.79253054896256");
+
+        // 优先使用手动维护数据
+        Matrix countryMatrix = RegionData.cityMappingList.get(countyId);
+        if (countryMatrix == null) {
+            countryMatrix = matrix;
+        }
+
+        param.put("maxLatitude", countryMatrix.getMaxLatitude());
+        param.put("minLatitude", countryMatrix.getMinLatitude());
+        param.put("maxLongitude", countryMatrix.getMaxLongitude());
+        param.put("minLongitude", countryMatrix.getMinLongitude());
 
         PriceResponse priceResponse = restTemplate.getForObject(url, PriceResponse.class, param);
-        if(priceResponse != null && priceResponse.getErrno() == 0){
+        if (priceResponse != null && priceResponse.getErrno() == 0) {
             Data data = priceResponse.getData();
-            List<PriceInfo> priceInfoList = data.getBubbleList();
+            priceInfoList = data.getBubbleList();
         }
-
-        System.out.println(priceResponse);
+        return priceInfoList;
     }
 
-    /**
-     * 获取所有区县下一级房价信息
-     * @param cityId
-     * @throws Exception
-     */
-    @Override
-    public void getAllStreetPrice(String cityId) throws Exception {
-        List<String> countyList = City.countyList;
-        for(String countyId : countyList){
-            getStreetPriceList(cityId, countyId);
-        }
-    }
 
     /**
      * 获取小区房价信息
      * 比如滟紫台
+     *
      * @throws Exception
      */
     @Override
-    public void getCommunityPriceList(String cityId, String streetId, String communityId) throws Exception {
-        String url = URLAddress.URL;
+    public List<PriceInfo> getCommunityPriceList(String cityId, String streetId, String communityId, Matrix matrix) throws Exception {
+        List<PriceInfo> priceInfoList = new ArrayList<>();
+        String url = URLAddress.PRICE_URL;
         url += "?cityId={cityId}";
         url += "&dataSource={dataSource}";
         url += "&groupType={groupType}";
@@ -129,33 +140,49 @@ public class HousePriceServiceImpl implements HousePriceService {
         param.put("cityId", "320100");
         param.put("dataSource", "ESF");
         param.put("groupType", StaticValue.groupType_community);
-        param.put("maxLatitude", "31.96182992719362");
-        param.put("minLatitude", "31.938728608086027");
-        param.put("maxLongitude", "118.81058273107178");
-        param.put("minLongitude", "118.76523626892809");
+
+        param.put("maxLatitude", matrix.getMaxLatitude());
+        param.put("minLatitude", matrix.getMinLatitude());
+        param.put("maxLongitude", matrix.getMaxLongitude());
+        param.put("minLongitude", matrix.getMinLongitude());
 
         PriceResponse priceResponse = restTemplate.getForObject(url, PriceResponse.class, param);
-        if(priceResponse != null && priceResponse.getErrno() == 0){
+        if (priceResponse != null && priceResponse.getErrno() == 0) {
             Data data = priceResponse.getData();
-            List<PriceInfo> priceInfoList = data.getBubbleList();
+            priceInfoList = data.getBubbleList();
         }
 
-        System.out.println(priceResponse);
+        return priceInfoList;
     }
 
     /**
-     * 获取某个街道所有小区房价信息
-     * @param cityId
-     * @param countyId
-     * @throws Exception
+     * 增加价格信息
      */
     @Override
-    public void getAllCommunityPrice(String cityId, String countyId) throws Exception {
-//        List<String> countyList = City.countyList;
-//        for(String countyId : countyList){
-//            getStreetPriceList(cityId, countyId);
-//        }
-        String communityId = "";
-        getCommunityPriceList(cityId, countyId, communityId);
+    public boolean addPriceInfo(PriceInfo priceInfo) {
+        boolean result = false;
+        try {
+            result = priceInfoDao.addPriceInfo(priceInfo);
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+        } finally {
+            return result;
+        }
     }
+
+    /**
+     * 批量增加房价信息
+     */
+    @Override
+    public boolean addPriceInfo(List<PriceInfo> priceInfoList) {
+        boolean result = false;
+        try {
+            result = priceInfoDao.addPriceInfo(priceInfoList);
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+        } finally {
+            return result;
+        }
+    }
+
 }

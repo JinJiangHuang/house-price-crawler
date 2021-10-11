@@ -2,6 +2,7 @@ package com.house.price.service.impl;
 
 import com.house.price.common.CityEnum;
 import com.house.price.service.HousePriceService;
+import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -43,6 +44,17 @@ public class HousePriceServiceImplTest {
     void testGetCommunityPriceList() throws Exception {
         String cityId = CityEnum.NanJing.getCityId();
 //        housePriceService.getCommunityPriceList(cityId, "", "");
+    }
+
+
+    @Test
+    void testIsExist() throws Exception {
+        String executeDate = "2021-08-14";
+        String priceType = "4";
+        String priceId = "1411041480662";
+
+        boolean isExist = housePriceService.isExist(executeDate, priceType, priceId);
+        Assert.assertEquals(isExist, true);
     }
 
 }

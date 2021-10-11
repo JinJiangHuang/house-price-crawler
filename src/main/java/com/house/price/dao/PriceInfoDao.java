@@ -16,4 +16,9 @@ public interface PriceInfoDao {
      */
     boolean addPriceInfo(List<PriceInfo> priceInfoList) throws Exception;
 
+    /**
+     * 判断数据是否存在
+     */
+    boolean isExist(String executeDate, String priceType, String priceId);
+
 }

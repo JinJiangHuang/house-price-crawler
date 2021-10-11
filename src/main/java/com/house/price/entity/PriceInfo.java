@@ -1,7 +1,7 @@
 package com.house.price.entity;
 
 public class PriceInfo {
-
+    private String executeDate; // 执行日期
     private String type;  // 类型：地市、区县、街道、小区
 
     private String border;  // 边界
@@ -184,6 +184,13 @@ public class PriceInfo {
         this.type = type;
     }
 
+    public String getExecuteDate() {
+        return executeDate;
+    }
+
+    public void setExecuteDate(String executeDate) {
+        this.executeDate = executeDate;
+    }
 
     @Override
     public String toString() {

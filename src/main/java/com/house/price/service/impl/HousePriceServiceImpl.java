@@ -162,7 +162,12 @@ public class HousePriceServiceImpl implements HousePriceService {
     public boolean addPriceInfo(PriceInfo priceInfo) {
         boolean result = false;
         try {
-            result = priceInfoDao.addPriceInfo(priceInfo);
+            boolean isExist = priceInfoDao.isExist(priceInfo.getExecuteDate(), priceInfo.getType(), priceInfo.getId());
+            if (isExist) {
+                LOG.warn("priceInfo exist: " + priceInfo.getId());
+            } else {
+                result = priceInfoDao.addPriceInfo(priceInfo);
+            }
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
         } finally {
@@ -177,7 +182,37 @@ public class HousePriceServiceImpl implements HousePriceService {
     public boolean addPriceInfo(List<PriceInfo> priceInfoList) {
         boolean result = false;
         try {
-            result = priceInfoDao.addPriceInfo(priceInfoList);
+            List<PriceInfo> tempPriceInfoList = new ArrayList<>(priceInfoList);
+            for (int i = tempPriceInfoList.size() - 1; i >= 0; i--) {
+                PriceInfo priceInfoItem = tempPriceInfoList.get(i);
+                boolean isExist = priceInfoDao.isExist(priceInfoItem.getExecuteDate(), priceInfoItem.getType(), priceInfoItem.getId());
+                if (isExist) {
+                    tempPriceInfoList.remove(priceInfoItem);
+                }
+            }
+            if(tempPriceInfoList != null && tempPriceInfoList.size() > 0){
+                result = priceInfoDao.addPriceInfo(tempPriceInfoList);
+            }
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+        } finally {
+            return result;
+        }
+    }
+
+    /**
+     * 判断数据是否存在
+     *
+     * @param executeDate
+     * @param priceType
+     * @param priceId
+     * @return
+     */
+    @Override
+    public boolean isExist(String executeDate, String priceType, String priceId) {
+        boolean result = false;
+        try {
+            result = priceInfoDao.isExist(executeDate, priceType, priceId);
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
         } finally {

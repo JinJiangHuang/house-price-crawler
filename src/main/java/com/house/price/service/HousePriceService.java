@@ -47,4 +47,13 @@ public interface HousePriceService {
      */
     boolean addPriceInfo(List<PriceInfo> priceInfoList);
 
+    /**
+     * 判断数据是否存在
+     * @param executeDate
+     * @param priceType
+     * @param priceId
+     * @return
+     */
+    boolean isExist(String executeDate, String priceType, String priceId);
+
 }

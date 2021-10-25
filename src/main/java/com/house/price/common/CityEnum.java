@@ -2,6 +2,7 @@ package com.house.price.common;
 
 public enum CityEnum {
     NanJing("南京", "320100"),
+    XiaMen("厦门", "350200"),
     ShangHai("上海", "2");
 
     private String cityName;

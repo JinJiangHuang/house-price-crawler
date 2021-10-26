@@ -52,7 +52,7 @@ public class PriceInfoDaoImpl implements PriceInfoDao {
     @Override
     public boolean addPriceInfo(List<PriceInfo> priceInfoList) throws Exception {
         String sql = "insert into t_price_info(execute_date, price_type, id, name, full_spell, longitude, latitude, price, price_unit, price_str, descx, image_type, icon, " +
-                "count, count_unit, count_str, entity_id, entity_type, border, bubble_desc, selected) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "count, count_unit, count_str, entity_id, entity_type, border, bubble_desc, selected,area_code) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
         jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
             public void setValues(PreparedStatement ps, int i) throws SQLException {
                 ps.setString(1, priceInfoList.get(i).getExecuteDate());
@@ -76,7 +76,7 @@ public class PriceInfoDaoImpl implements PriceInfoDao {
                 ps.setString(19, priceInfoList.get(i).getBorder());
                 ps.setString(20, priceInfoList.get(i).getBubbleDesc());
                 ps.setString(21, priceInfoList.get(i).getSelected());
-
+                ps.setString(22, priceInfoList.get(i).getAreaCode());
             }
 
             public int getBatchSize() {

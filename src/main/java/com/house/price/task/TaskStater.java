@@ -47,6 +47,7 @@ public class TaskStater {
                     for (PriceInfo countryPriceInfoItem : countryPriceInfoList) {
                         countryPriceInfoItem.setExecuteDate(executeDate);
                         countryPriceInfoItem.setType(StaticValue.TYPE_COUNTRY);
+                        countryPriceInfoItem.setAreaCode(cityId);
                         LOG.info("「区县」" + countryPriceInfoItem.getName() + " - " + countryPriceInfoItem);
                     }
                     housePriceService.addPriceInfo(countryPriceInfoList);
@@ -68,6 +69,7 @@ public class TaskStater {
                         for (PriceInfo streetPriceInfoSubItem : streetPriceInfoList) {
                             streetPriceInfoSubItem.setExecuteDate(executeDate);
                             streetPriceInfoSubItem.setType(StaticValue.TYPE_STREET);
+                            streetPriceInfoSubItem.setAreaCode(cityId);
                             LOG.info("「街道」" + streetPriceInfoSubItem.getName() + " - " + streetPriceInfoSubItem);
                         }
                         housePriceService.addPriceInfo(streetPriceInfoList);
@@ -88,6 +90,7 @@ public class TaskStater {
                             for (PriceInfo communityPriceInfoSubItem : communityPriceInfoList) {
                                 communityPriceInfoSubItem.setExecuteDate(executeDate);
                                 communityPriceInfoSubItem.setType(StaticValue.TYPE_COMMUNITY);
+                                communityPriceInfoSubItem.setAreaCode(cityId);
                                 LOG.info("「小区」" + communityPriceInfoSubItem.getName() + " - " + communityPriceInfoSubItem);
 
                             }

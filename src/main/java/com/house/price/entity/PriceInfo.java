@@ -23,6 +23,7 @@ public class PriceInfo {
     private String priceUnit;   // 价格单位
     private String desc;    // 展示价格
     private String selected;    //: false
+    private String areaCode;
 
     public String getBorder() {
         return border;
@@ -192,6 +193,14 @@ public class PriceInfo {
         this.executeDate = executeDate;
     }
 
+    public String getAreaCode() {
+        return areaCode;
+    }
+
+    public void setAreaCode(String areaCode) {
+        this.areaCode = areaCode;
+    }
+
     @Override
     public String toString() {
         return "PriceInfo{" +
@@ -215,6 +224,7 @@ public class PriceInfo {
                 ", priceUnit='" + priceUnit + '\'' +
                 ", desc='" + desc + '\'' +
                 ", selected='" + selected + '\'' +
+                ", areaCode='" + areaCode + '\'' +
                 '}';
     }
 }

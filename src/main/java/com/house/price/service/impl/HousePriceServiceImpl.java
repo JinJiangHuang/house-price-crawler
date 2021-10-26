@@ -137,7 +137,7 @@ public class HousePriceServiceImpl implements HousePriceService {
         url += "&minLongitude={minLongitude}";
 
         Map<String, String> param = new HashMap<>();
-        param.put("cityId", "320100");
+        param.put("cityId", cityId);
         param.put("dataSource", "ESF");
         param.put("groupType", StaticValue.groupType_community);
 

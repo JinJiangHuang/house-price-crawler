@@ -1,7 +1,6 @@
 package com.house.price.task;
 
 import com.house.price.common.DateUtil;
-import com.house.price.common.RegionData;
 import com.house.price.common.StaticValue;
 import com.house.price.common.Utils;
 import com.house.price.entity.CityEntity;
@@ -13,9 +12,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 
 @Component
@@ -29,7 +28,10 @@ public class TaskStater {
     @Autowired
     ConfigDataService configDataService;
 
-    @PostConstruct
+    /**
+     * 每天10：30自动执行
+     */
+    @Scheduled(cron = "0 30 10 * * *")
     @Async
     void startTask() {
 
